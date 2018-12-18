@@ -71,7 +71,7 @@ def getFile(url):
 # crawl(indexUrl, 'div .bookContainer > a', 'href')
 # crawl('http://goalkicker.com/VBABook/', 'button', 'class')
 
-# print(getSoup('http://goalkicker.com/VBABook/').button.get('onclick'))
+print(getSoup('http://goalkicker.com/VBABook/').button.get('onclick'))
 # reg = r'\'(.+)\''
 # regex = re.compile(reg)
 # print(re.findall(regex, getSoup('http://goalkicker.com/VBABook/').button.get('onclick')))
@@ -86,4 +86,4 @@ def download():
     for url in downloadUrlStringList:
         getFile(url)
 
-download()
+# download()
