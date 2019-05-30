@@ -6,8 +6,8 @@ import time
 import datetime
 from bs4 import BeautifulSoup
 
-url = "html\\Prime Video_ Parcourir.html"
-exampleUrl = "html\\example.html"
+url = "web-scraper\\primeVideo\\html\\Prime Video_ Parcourir.html"
+exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
 
 html_doc = """
 <html><head><title>The Dormouse's story</title></head>
@@ -31,16 +31,29 @@ def createCsvFile():
     except AssertionError as error:
         print(error)
         print("can not create csv file")
+
 def initSoup(file):
     return BeautifulSoup(file, "lxml")
 
+def extractFilmName(divTagList):
+    for div in divTagList:
+        nameNode = div.find("a")
+        print(nameNode)
+        # print(div.find_all("span", {"class": "dv-grid-beard-info"})[0])
+        imdbNode = div.find_all("span", {"class": "dv-grid-beard-info"})[0].contents[1]
+        print(imdbNode)
+        imdbScore = str(imdbNode.text).splitlines()[1].strip()
+        print("################################################################################ film data begins")
+        filmItem = {"name": nameNode.text, "imdbScore": imdbScore, "link": nameNode["href"]}
+        print(filmItem)
+        print("################################################################################ film data ends")
+
 #createCsvFile()
-soup = initSoup(html_doc)
-print(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
-primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), url), "r", encoding='utf-8'))
-divList =  primeVideoSoup.find_all("span", limit=2)
-print(divList)
-print(repr(primeVideoSoup.title))
-# print(soup.a['href'])
-# for child in soup.head.descendants:
-#     print(child)
+# soup = initSoup(html_doc)
+# print(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
+primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
+# divList =  primeVideoSoup.find_all("span", limit=2)
+divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=1)
+# print(divList)
+print("################################################################################")
+extractFilmName(divList)
