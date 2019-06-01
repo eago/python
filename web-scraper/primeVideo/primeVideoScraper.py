@@ -6,6 +6,13 @@ import time
 import datetime
 from bs4 import BeautifulSoup
 
+"""
+This script aims to parser Amazon France prime video web page (https://www.primevideo.com/) to get the films with an IMDb notes.
+Then it will write the results in an csv file for personal usage.
+The script use exclusively the BeautifulSoup library (https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/).
+This file is under MIT License @Copyright, you can copy it, change it use it with all rights within laws.
+ """
+
 # url = "web-scraper\\primeVideo\\html\\Prime Video_ Parcourir.html"
 # exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
 url = "html\\Prime Video_ Parcourir.html"
@@ -52,4 +59,5 @@ def extractFilmName(divTagList):
 primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
 divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=20)
 print("################################################################################")
-createCsvFile(extractFilmName(divList))
+extractFilmName(divList)
+# createCsvFile(extractFilmName(divList))
