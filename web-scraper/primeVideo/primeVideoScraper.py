@@ -16,7 +16,10 @@ This file is under MIT License @Copyright, you can copy it, change it use it wit
 
 # url = "web-scraper\\primeVideo\\html\\Prime Video_ Parcourir.html"
 # exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
-url = "html\\Prime Video_ Parcourir.html"
+url_drame = "html\\Prime Video_ Parcourir_drame.html"
+url_comedy = "html\\Prime Video_ Parcourir_comedy.html"
+url_popular = "html\\Prime Video_ Parcourir_popular.html"
+url_recent = "html\\Prime Video_ Parcourir_recent.html"
 exampleUrl = "html\\example.html"
 
 def createCsvFile(filmItemList):
@@ -62,11 +65,19 @@ def extractFilmName(divTagList, category):
     # print(filmItemList)
     return filmItemList
 
+def getFilmListByCategory(url, category):
+    primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), url), "r", encoding='utf-8'))
+    divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=1000000)
+    return extractFilmName(divList, category)
+
 # UTF8Writer = codecs.getwriter("utf8")
 # sys.stdout = UTF8Writer(sys.stdout)
-# print(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
-primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), url), "r", encoding='utf-8'))
-divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=1000)
 print("################################################################################")
-# extractFilmName(divList, "Drame")
-createCsvFile(extractFilmName(divList, "Drame"))
+dramaFilmList = getFilmListByCategory(url_drame, "drama")
+comedyFilmList = getFilmListByCategory(url_comedy, "comedy")
+popularFilmList = getFilmListByCategory(url_popular, "popular")
+recentFilmList = getFilmListByCategory(url_recent, "recent")
+dramaFilmList.extend(comedyFilmList)
+dramaFilmList.extend(popularFilmList)
+dramaFilmList.extend(recentFilmList)
+createCsvFile(dramaFilmList)
