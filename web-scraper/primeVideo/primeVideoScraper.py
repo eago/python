@@ -1,5 +1,6 @@
 import os
 import sys
+import codecs
 from urllib3 import request
 import requests
 import time
@@ -9,9 +10,9 @@ from bs4 import BeautifulSoup
 """
 This script aims to parser Amazon France prime video web page (https://www.primevideo.com/) to get the films with an IMDb notes.
 Then it will write the results in an csv file for personal usage.
-The script use exclusively the BeautifulSoup library (https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/).
-This file is under MIT License @Copyright, you can copy it, change it use it with all rights within laws.
- """
+The script uses exclusively the BeautifulSoup library (https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/).
+This file is under MIT License @Copyright, you can copy it, change it use it with all rights if it's allowed by law.
+"""
 
 # url = "web-scraper\\primeVideo\\html\\Prime Video_ Parcourir.html"
 # exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
@@ -25,8 +26,9 @@ def createCsvFile(filmItemList):
         open(fileName, 'wb')
         with open(fileName, 'a', encoding="utf8") as csvFile:
             # sortedFilmItemList = filmItemList.sort(key= id)
+            csvFile.write("id|name|imdbScore|year|category|link")
             for filmItem in filmItemList:
-                line = str(filmItem.get("id")) + "|" + filmItem.get("name") + "|" + filmItem.get("imdbScore") + "|" + filmItem.get("year") + "|" + filmItem.get("link")
+                line = str(filmItem.get("id")) + "|" + filmItem.get("name") + "|" + filmItem.get("imdbScore") + "|" + filmItem.get("year") + "|"+ filmItem.get("category") + "|" + filmItem.get("link")
                 csvFile.write(line + "\n")
         print("csv file is created")
     except AssertionError as error:
@@ -36,28 +38,32 @@ def createCsvFile(filmItemList):
 def initSoup(file):
     return BeautifulSoup(file, "lxml")
 
-def extractFilmName(divTagList):
+def extractFilmName(divTagList, category):
     filmItemList = []
     filmItemList.sort(key=divTagList)
     index = 1
+    IMDB_NOTE_POSTION = 0
+    FILM_YRAR_POSITION = 1
     for div in divTagList:
-        filmInfoNode = div.find_all("span", {"class": "dv-grid-beard-info"})[0]
-        print(filmInfoNode.contents.__len__())
-        if (filmInfoNode.contents.__len__() > 6):
+        filmInfoNode = div.find_all("span", {"class": "dv-grid-beard-info"})[IMDB_NOTE_POSTION]
+        # print(filmInfoNode.contents.__len__())
+        if (filmInfoNode.contents.__len__() > 2):
             nameNode = div.find("a")
-            imdbNode = filmInfoNode.contents[1]
-            filmYearNode = filmInfoNode.contents[3]
-            imdbScore = str(imdbNode.text).splitlines()[1].strip()
-            filmItem = {"id": index, "name": nameNode.text, "imdbScore": imdbScore, "year": filmYearNode.string, "link": nameNode["href"]}
+            imdbNode = filmInfoNode.contents[IMDB_NOTE_POSTION]
+            filmYearNode = filmInfoNode.contents[FILM_YRAR_POSITION]
+            imdbScore = str(imdbNode.text).split(' ')[1].strip()
+            filmItem = {"id": index, "name": nameNode.text, "imdbScore": imdbScore, "year": filmYearNode.string, "category": category, "link": nameNode["href"]}
             filmItemList.append(filmItem)
             index += 1
         # print("################################################################################ film data ends")
     print(filmItemList)
     return filmItemList
 
+# UTF8Writer = codecs.getwriter("utf8")
+# sys.stdout = UTF8Writer(sys.stdout)
 # print(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
-primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), exampleUrl), "r", encoding='utf-8'))
-divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=20)
+primeVideoSoup = initSoup(open(os.path.join(os.getcwd(), url), "r", encoding='utf-8'))
+divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=10)
 print("################################################################################")
-extractFilmName(divList)
+extractFilmName(divList, "Drame")
 # createCsvFile(extractFilmName(divList))
