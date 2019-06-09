@@ -14,13 +14,18 @@ The script uses exclusively the BeautifulSoup library (https://www.crummy.com/so
 This file is under MIT License @Copyright, you can copy it, change it use it with all rights if it's allowed by law.
 """
 
-# url = "web-scraper\\primeVideo\\html\\Prime Video_ Parcourir.html"
 # exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
 url_drame = "html\\Prime Video_ Parcourir_drame.html"
 url_comedy = "html\\Prime Video_ Parcourir_comedy.html"
 url_popular = "html\\Prime Video_ Parcourir_popular.html"
 url_recent = "html\\Prime Video_ Parcourir_recent.html"
 exampleUrl = "html\\example.html"
+
+class Category:
+    DRAMA = "drama"
+    COMEDY = "comedy"
+    POPULAR = "popular"
+    RECENT = "recent"
 
 def initSoup(file):
     return BeautifulSoup(file, "lxml")
@@ -83,11 +88,11 @@ def getFilmListByCategory(url, category):
 # UTF8Writer = codecs.getwriter("utf8")
 # sys.stdout = UTF8Writer(sys.stdout)
 print("################################################################################")
-dramaFilmList = getFilmListByCategory(url_drame, "drama")
-comedyFilmList = getFilmListByCategory(url_comedy, "comedy")
-popularFilmList = getFilmListByCategory(url_popular, "popular")
-recentFilmList = getFilmListByCategory(url_recent, "recent")
-completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, "comedy")
-completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, "popular")
-completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, "recent")
+dramaFilmList = getFilmListByCategory(url_drame, Category.DRAMA)
+comedyFilmList = getFilmListByCategory(url_comedy, Category.COMEDY)
+popularFilmList = getFilmListByCategory(url_popular, Category.POPULAR)
+recentFilmList = getFilmListByCategory(url_recent, Category.RECENT)
+completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, Category.COMEDY)
+completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, Category.POPULAR)
+completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, Category.RECENT)
 createCsvFile(completFilmList)
