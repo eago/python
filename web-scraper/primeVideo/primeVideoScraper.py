@@ -22,6 +22,9 @@ url_popular = "html\\Prime Video_ Parcourir_popular.html"
 url_recent = "html\\Prime Video_ Parcourir_recent.html"
 exampleUrl = "html\\example.html"
 
+def initSoup(file):
+    return BeautifulSoup(file, "lxml")
+
 def createCsvFile(filmItemList):
     os.chdir(os.path.join(os.getcwd(), 'csv'))
     try:
@@ -40,8 +43,15 @@ def createCsvFile(filmItemList):
 def sortFilmListByImdbScore(filmItemList):
     filmItemList.sort(key = lambda film: film.get("imdbScore"), reverse = True)
 
-def initSoup(file):
-    return BeautifulSoup(file, "lxml")
+def appendFilmListWithCategory(originList: [], newList: [], category: str):
+    # I know this is far from efficient :(, but we will talk about it later
+    for film in newList:
+        existedFilm = next((f for f in originList if f.get("name") == film.get("name") and f.get("year") == film.get("year")), None)
+        if (existedFilm is not None):
+            existedFilm["category"] = existedFilm.get("category") + "," + category
+        else:
+            originList.append(film)
+    return originList
 
 def extractFilmName(divTagList, category):
     filmItemList = []
@@ -77,7 +87,7 @@ dramaFilmList = getFilmListByCategory(url_drame, "drama")
 comedyFilmList = getFilmListByCategory(url_comedy, "comedy")
 popularFilmList = getFilmListByCategory(url_popular, "popular")
 recentFilmList = getFilmListByCategory(url_recent, "recent")
-dramaFilmList.extend(comedyFilmList)
-dramaFilmList.extend(popularFilmList)
-dramaFilmList.extend(recentFilmList)
-createCsvFile(dramaFilmList)
+completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, "comedy")
+completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, "popular")
+completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, "recent")
+createCsvFile(completFilmList)
