@@ -5,6 +5,7 @@ from urllib3 import request
 import requests
 import time
 import datetime
+import psycopg2
 from bs4 import BeautifulSoup
 
 """
@@ -85,6 +86,32 @@ def getFilmListByCategory(url, category):
     divList =  primeVideoSoup.find_all("div", {"class":"mustache"}, limit=1000000)
     return extractFilmName(divList, category)
 
+def writeToPostgres(filmItemList):
+    try:
+        connection = psycopg2.connect(
+            user = "user",
+            password = "password",
+            host = "127.0.0.1",
+            port = "5432",
+            database = "mydb")
+        cursor = connection.cursor()
+        query = ''' insert into prime_film (id, name, imdb_score, year, category, link) values (%s, %s, %s, %s, %s, %s)  '''
+        for filmItem in filmItemList:
+            record = (str(filmItem.get("id")), filmItem.get("name"), filmItem.get("imdbScore"), filmItem.get("year"), filmItem.get("category"), filmItem.get("link"))
+            cursor.execute(query, record)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if(connection):
+            print("Failed to insert record into mobile table", error)
+    finally:
+        #closing database connection
+        if(connection):
+            cursor.close()
+            connection.close()
+            print("PostgreSQL connection is closed")
+
+
+
 # UTF8Writer = codecs.getwriter("utf8")
 # sys.stdout = UTF8Writer(sys.stdout)
 print("################################################################################")
@@ -95,4 +122,5 @@ recentFilmList = getFilmListByCategory(url_recent, Category.RECENT)
 completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, Category.COMEDY)
 completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, Category.POPULAR)
 completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, Category.RECENT)
-createCsvFile(completFilmList)
+# createCsvFile(completFilmList)
+writeToPostgres(completFilmList)
