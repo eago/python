@@ -1,9 +1,4 @@
 import os
-import sys
-import codecs
-from urllib3 import request
-import requests
-import time
 import datetime
 import psycopg2
 from bs4 import BeautifulSoup
