@@ -10,10 +10,10 @@ The script uses exclusively the BeautifulSoup library (https://www.crummy.com/so
 This file is under MIT License @Copyright, you can copy it, change it use it with all rights if it's allowed by law.
 """
 
-# exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
+exampleUrl = "web-scraper\\primeVideo\\html\\example.html"
 url_drame = "html\\Prime Video_ Parcourir_drame.html"
 url_comedy = "html\\Prime Video_ Parcourir_comedy.html"
-url_popular = "html\\Prime Video_ Parcourir_popular.html"
+url_popular = "html\\Prime Video_ Parcourir.html"
 url_recent = "html\\Prime Video_ Parcourir_recent.html"
 exampleUrl = "html\\example.html"
 
@@ -110,12 +110,23 @@ def writeToPostgres(filmItemList):
 # UTF8Writer = codecs.getwriter("utf8")
 # sys.stdout = UTF8Writer(sys.stdout)
 print("################################################################################")
-dramaFilmList = getFilmListByCategory(url_drame, Category.DRAMA)
-comedyFilmList = getFilmListByCategory(url_comedy, Category.COMEDY)
+# dramaFilmList = getFilmListByCategory(url_drame, Category.DRAMA)
+# comedyFilmList = getFilmListByCategory(url_comedy, Category.COMEDY)
 popularFilmList = getFilmListByCategory(url_popular, Category.POPULAR)
-recentFilmList = getFilmListByCategory(url_recent, Category.RECENT)
-completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, Category.COMEDY)
-completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, Category.POPULAR)
-completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, Category.RECENT)
-# createCsvFile(completFilmList)
-writeToPostgres(completFilmList)
+# recentFilmList = getFilmListByCategory(url_recent, Category.RECENT)
+# completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, Category.COMEDY)
+# completFilmList = appendFilmListWithCategory(dramaFilmList, comedyFilmList, Category.COMEDY)
+# completFilmList = appendFilmListWithCategory(completFilmList, popularFilmList, Category.POPULAR)
+# completFilmList = appendFilmListWithCategory(completFilmList, recentFilmList, Category.RECENT)
+createCsvFile(popularFilmList)
+# writeToPostgres(completFilmList)
+
+"""
+create table prime_film (id varchar(255),
+ name varchar(255), 
+ imdb_score varchar(255), 
+ year varchar(255), 
+ category varchar(255), 
+ link varchar(255));
+"""
+
